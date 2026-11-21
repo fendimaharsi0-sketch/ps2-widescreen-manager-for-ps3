@@ -93,6 +93,12 @@ differs, and why direct ISO patching is offered as the stronger
 option: it writes the exact bytes into the ISO, so it does not depend
 on the old value at all.
 
+The `.CONFIG` hook targets Sony's `ps2_netemu` only — the PS2
+emulator on PS3 that reads these files. For backward-compatible
+emulators, which do not read `.CONFIG` files, patch the ISO
+directly: it works regardless of the emulator. Or just use
+`ps2_netemu`, with all its limitations.
+
 `.CONFIG` files written by this app carry a `WSM1` marker at the end
 of the file, so app-made files can be told apart from hand-made ones.
 
