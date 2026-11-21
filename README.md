@@ -5,7 +5,7 @@ directly on the console. It lists the PS2 games in `/dev_hdd0/PS2ISO/`,
 and lets you enable widescreen for each game — either by writing a
 `.CONFIG` patch file next to the ISO, or by patching the ISO itself.
 
-No PC needed after installation. No game files are uploaded anywhere.
+No PC needed after installation.
 
 ## Features
 
