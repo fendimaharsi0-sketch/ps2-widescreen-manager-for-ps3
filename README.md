@@ -116,8 +116,8 @@ put it where the build expects it:
   and `CUSTOM` folders into `data/configdb/`. Snapshot used for
   testing: master 2026-11-02, 1,549 entries. Single entries can
   also be downloaded from https://ps3.aldostools.org/ps2config.html
-- **App icons → `data/`**: `ICON0.PNG` and `PIC1.PNG` are not in
-  this repository either — place them directly in `data/`.
+- **App icons → `data/`**: `ICON0.PNG` and `PIC1.PNG` are in
+  this repository (`data/`).
 
 ## Safety notes
 
