@@ -451,7 +451,7 @@ static const char *patch_dir_for(const ws_game_t *g)
 
 /* Editor patch (Triangle): pilih patch mana yang aktif untuk satu game.
  * Centang awal = isi .CONFIG yang ada (baca balik — .CONFIG adalah
- * satu-satunya state), atau default widescreen patch=1 saja kalau belum
+ * satu-satunya state), atau default widescreen saja kalau belum
  * ada .CONFIG / .CONFIG tidak bisa dibaca. Bulatan = kembali dan
  * langsung tulis .CONFIG dari centangan (atau hapus .CONFIG kalau
  * tidak ada yang dicentang). Start = tulis centangan ke ISO
@@ -1424,8 +1424,8 @@ int main(void)
                 /* ---- Toggle ON: konversi + tulis .CONFIG ---- */
                 /* Default = widescreen-only: konverter sendiri tidak
                  * peduli grup, jadi teks yang diberikan ke ws_convert
-                 * hanya berisi baris widescreen patch=1 (bukan semua
-                 * patch=1 di file). Isi .pnach dibaca per-file di
+                 * hanya berisi baris widescreen (bukan semua
+                 * patch di file). Isi .pnach dibaca per-file di
                  * sini (satu file kecil), bukan dari blob — lalu
                  * di-free sesudah konversi. */
                 char *text = NULL;

@@ -505,7 +505,9 @@ int ws_ws_lines(const char *text, size_t len,
             in_ws = ws_group_kind(group) == 2;
             continue;
         }
-        if (in_ws && strncmp(stripped, "patch=1,", 8) == 0 &&
+        /* Fase 3o: status patch=0/1 diabaikan — keduanya dihitung. */
+        if (in_ws && (strncmp(stripped, "patch=1,", 8) == 0 ||
+                      strncmp(stripped, "patch=0,", 8) == 0) &&
             n < max_lines) {
             lines[n++] = ln;
         }
@@ -620,7 +622,7 @@ int ws_patch_candidates(ws_patch_index_t *index, uint32_t crc,
     return n;
 }
 
-/* Parse alamat + tipe dari baris patch "patch=1,EE,ADDR,TYPE,VALUE".
+/* Parse alamat + tipe dari baris patch "patch=1/0,EE,ADDR,TYPE,VALUE".
  * addr = raw & 0x0FFFFFFF (sama seperti konverter). convertible = 1
  * kalau konverter bisa menulisnya: word, atau extended prefix 0x2;
  * bukan kondisional 0xE, bukan sub-word, alamat < 0x2000000.
@@ -681,9 +683,12 @@ int ws_patch_list(const char *text, size_t len,
         if (!stripped[0] || strncmp(stripped, "//", 2) == 0) continue;
         if (is_group_header(stripped, group, sizeof(group))) continue;
         /* Baris patch: "patch=1," atau "patch=0," (spasi sesudah
-         * koma tidak ada di database; yang lain bukan baris patch). */
+         * koma tidak ada di database; yang lain bukan baris patch).
+         * Fase 3o: status diabaikan — keduanya aktif (patch=0 di
+         * PCSX2 artinya nonaktif default, tidak relevan buat
+         * proyek ini). */
         if (strncmp(stripped, "patch=1,", 8) == 0) enabled = 1;
-        else if (strncmp(stripped, "patch=0,", 8) == 0) enabled = 0;
+        else if (strncmp(stripped, "patch=0,", 8) == 0) enabled = 1;
         else continue;
         if (n >= max_items) break;
         memset(&items[n], 0, sizeof(items[n]));

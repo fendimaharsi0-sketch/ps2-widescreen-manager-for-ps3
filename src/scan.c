@@ -226,7 +226,7 @@ int ws_game_load_patch(ws_game_t *g, const char *patches_dir,
     /* Isi file dibaca hanya untuk game ini (satu file kecil), lalu
        di-free — bukan seluruh database. Hitung: total baris patch,
        widescreen 16:9 (lapis 1, yang menentukan avail), dan baris
-       patch=1 yang convertible. */
+       patch yang convertible. */
     if (ws_patch_read_file(patches_dir, patch_file, &text,
                            &text_len) != 0) {
         g->avail = WS_AVAIL_ERROR;

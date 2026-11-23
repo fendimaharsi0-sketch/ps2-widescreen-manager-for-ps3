@@ -40,7 +40,7 @@ typedef struct {
                              * sendiri — user yang pilih (picker) */
     int ws_lines;         /* baris patch widescreen 16:9 aktif (lapis 1) */
     int n_lines;          /* semua baris patch di file (0 kalau tidak ada) */
-    int n_conv;           /* baris patch=1 yang convertible (word /
+    int n_conv;           /* baris patch yang convertible (word /
                              * extended 0x2, bukan kondisional/sub-word) */
     int has_config;       /* file <ISO>.CONFIG ada di sebelah ISO */
     int iso_patched;      /* file <ISO>.wsrest ada: ISO sudah di-patch

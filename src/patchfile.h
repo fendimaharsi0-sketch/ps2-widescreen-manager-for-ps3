@@ -143,7 +143,7 @@ typedef struct { const char *s; size_t n; } ws_text_line_t;
  * berpengaruh: cuma lapis 1 yang auto-centang. */
 int ws_group_kind(const char *group);
 
-/* Baris patch=1 aktif di bawah header widescreen 16:9 (lapis 1,
+/* Baris patch aktif di bawah header widescreen 16:9 (lapis 1,
    tanpa baris komentar, tanpa gsaspectratio). Mengembalikan jumlah
    baris (maks max_lines); lines[i] menunjuk ke dalam text (jangan
    di-free). */
@@ -157,14 +157,15 @@ void ws_gametitle(const char *text, size_t len, char *out, size_t out_size);
  * editor patch (Triangle). `line` = baris penuh sesudah di-strip
  * (termasuk komentar `//`, karena konverter baca old value dari
  * situ), NUL-terminated, maks 255 karakter (baris terpanjang di
- * database 206 karakter). `enabled` = patch=1 di file. `ws_kind` =
+ * database 206 karakter). `enabled` selalu 1 (Fase 3o: status
+ * patch=0/1 diabaikan). `ws_kind` =
  * klasifikasi grup (ws_group_kind): 2 = widescreen 16:9, 1 =
  * widescreen rasio lain/tidak jelas, 0 = bukan widescreen. */
 #define WS_MAX_PATCH_ITEMS 1024
 typedef struct {
     char group[48];   /* nama grup, mis. "Widescreen 16:9" */
     char line[256];   /* baris patch penuh, sudah di-strip */
-    int enabled;      /* 1 = patch=1, 0 = patch=0 */
+    int enabled;      /* selalu 1 (Fase 3o: status patch=0/1 diabaikan) */
     int ws_kind;      /* 2 = widescreen 16:9, 1 = wide lain, 0 = bukan wide */
     uint32_t addr;    /* alamat EE (raw & 0x0FFFFFFF), untuk cocokkan .CONFIG */
     int convertible;  /* 1 kalau konverter bisa menulisnya (word, atau

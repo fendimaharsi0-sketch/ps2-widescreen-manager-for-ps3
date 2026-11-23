@@ -105,8 +105,9 @@ of the file, so app-made files can be told apart from hand-made ones.
 ## Where the patch data comes from
 
 The `data/` folders in this repository are empty on purpose
-(`.gitkeep` only). Download the data once from its source and
-put it where the build expects it:
+(`.gitkeep` only), except for the CONFIG database, which ships
+as `data/configdb.b64`. Download the data once from its source
+and put it where the build expects it:
 
 - **Widescreen patches → `data/patches/`**: the
   [PCSX2](https://github.com/PCSX2/pcsx2_patches) `pcsx2_patches`
@@ -115,13 +116,17 @@ put it where the build expects it:
   its `.pnach` files into `data/patches/`. Snapshot used for
   testing: 2026-11-10, 4,719 files. The app only enables 16:9
   widescreen groups by default.
-- **CONFIG database → `data/configdb/`**: the community PS2CONFIG
-  database from
+- **CONFIG database → `data/configdb.b64`**: the community
+  PS2CONFIG database from
   [webMAN MOD](https://github.com/aldostools/webMAN-MOD/tree/master/_Projects_/updater/PS2CONFIG/USRDIR/CONFIG)
-  (`_Projects_/updater/PS2CONFIG/USRDIR/CONFIG`) — copy its `NET`
-  and `CUSTOM` folders into `data/configdb/`. Snapshot used for
-  testing: master 2026-11-02, 1,549 entries. Single entries can
-  also be downloaded from https://ps3.aldostools.org/ps2config.html
+  (`_Projects_/updater/PS2CONFIG/USRDIR/CONFIG`) — it ships as one
+  base64 text file in the repo (`data/configdb.b64`), decoded
+  automatically by `build.sh` (the `.CONFIG` files are binary, so
+  they cannot be pushed as files). A real `data/configdb/` folder
+  with the `NET` and `CUSTOM` subfolders still overrides it, as
+  does `CONFIGDB_SRC`. Snapshot used for testing: master 2026-11-02,
+  1,549 entries. Single entries can also be downloaded from
+  https://ps3.aldostools.org/ps2config.html
 - **App icons → `data/`**: `ICON0.PNG` and `PIC1.PNG` are in
   this repository (`data/`).
 
@@ -179,10 +184,12 @@ Requires the PSL1GHT SDK (`ppu-gcc`):
 This produces a `.pkg` (ContentID `UP0001-PS2W00001_00-0000000000000001`,
 app ID `PS2W00001`).
 
-The `data/` folders ship empty (`.gitkeep` only). Download the
-patch data once from its source (see below), then run the build.
-If you already have the data elsewhere, point the build at it
-with `PATCHES_SRC` / `CONFIGDB_SRC` instead of copying it in.
+The `data/` folders ship empty (`.gitkeep` only), except for the
+CONFIG database, which ships as one base64 text file
+(`data/configdb.b64`) and is decoded automatically by `build.sh`.
+Download the patch data once from its source (see below), then run
+the build. If you already have the data elsewhere, point the build
+at it with `PATCHES_SRC` / `CONFIGDB_SRC` instead of copying it in.
 
 The host test suite needs no SDK — just a host compiler and the
 PCSX2 patch snapshot above:

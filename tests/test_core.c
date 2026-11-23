@@ -15,6 +15,9 @@
  *    (gametitle + comment + // sebelum grup pertama), load satu file
  *    ke game; scan game_d (boot SLUS-99999, ELF beda) -> AMBIGUOUS,
  *    dup_count 2.
+ * T6e patch=0 (Fase 3o): status patch=0/1 diabaikan — baris patch=0
+ *    dianggap aktif di mana-mana: list, hitung widescreen, parse
+ *    converter/ISO, teks hasil filter (lewat apa adanya).
  * T7 Patch asli per-file (Fase 0): MotoGP 4 = 5 baris, BR4 = 1,
  *    Downhill = 35, Xena (disabled) = 0.
  */
@@ -23,6 +26,7 @@
 #include <string.h>
 
 #include "patchfile.h"
+#include "convert.h"
 #include "crc32.h"
 #include "elf.h"
 #include "iso9660.h"
@@ -362,6 +366,62 @@ static void t6d_dup_pick(ws_patch_index_t *pindex,
     }
 }
 
+/* Fase 3o: status patch=0 diabaikan (NFS Undercover: semua baris
+ * patch=0 di database). Baris patch=0 dianggap aktif di mana-mana:
+ * list, hitung widescreen, parse converter/ISO, teks hasil filter
+ * (lewat apa adanya, tidak ditulis ulang). */
+static void t6e_patch0_enable(void)
+{
+    static const char uc[] =
+        "gametitle=Need for Speed - Undercover (NTSC-U) SLUS-21801 7029F4DB\n"
+        "\n"
+        "[Widescreen 16:9]\n"
+        "gsaspectratio=16:9\n"
+        "patch=0,EE,006533B0,word,3F400000\n"
+        "\n"
+        "[Remove Blur]\n"
+        "patch=0,EE,0065CA7C,word,00000000\n"
+        "\n"
+        "[Disable Speed Effect]\n"
+        "patch=1,EE,0043A8C0,word,14A0003C\n";
+    static ws_patch_item_t items[WS_MAX_PATCH_ITEMS];
+    int checked[3] = { 1, 0, 1 };
+    char *out = NULL;
+    size_t out_len = 0;
+    int n = ws_patch_list(uc, sizeof(uc) - 1, items, WS_MAX_PATCH_ITEMS);
+    CHECK("T6e 3 baris terbaca", n == 3);
+    CHECK("T6e baris widescreen patch=0 aktif, convertible, kind 2",
+          n == 3 && items[0].enabled == 1 && items[0].convertible == 1 &&
+          items[0].ws_kind == 2);
+    /* ws_ws_lines ikut menghitung baris patch=0 di grup widescreen. */
+    {
+        ws_text_line_t lines[128];
+        int nw = ws_ws_lines(uc, sizeof(uc) - 1, lines, 128);
+        CHECK("T6e ws_lines == 1 (patch=0 dihitung)", nw == 1);
+    }
+    /* Parser converter/ISO: ketiganya patch aktif. */
+    {
+        ws_pnach_t pn;
+        ws_report_t rep;
+        memset(&rep, 0, sizeof(rep));
+        CHECK("T6e parse_pnach OK, n_patches == 3",
+              ws_parse_pnach(uc, sizeof(uc) - 1, &pn, &rep) == 0 &&
+              pn.n_patches == 3);
+    }
+    CHECK("T6e filtered_text OK",
+          ws_patch_filtered_text(uc, sizeof(uc) - 1, items, checked, n,
+                                 &out, &out_len) == 0 && out != NULL);
+    if (out) {
+        CHECK("T6e baris dicentang patch=0 lewat apa adanya",
+              strstr(out, "patch=0,EE,006533B0,word,3F400000") != NULL);
+        CHECK("T6e baris tidak dicentang tidak ikut",
+              strstr(out, "0065CA7C") == NULL);
+        CHECK("T6e baris patch=1 lewat apa adanya",
+              strstr(out, "patch=1,EE,0043A8C0,word,14A0003C") != NULL);
+        free(out);
+    }
+}
+
 /* Cek satu CRC di indeks patch asli: lookup + baca file + hitung baris. */
 static void t7_one(ws_patch_index_t *pindex, const char *patches_dir,
                    uint32_t crc, const char *serial, const char *label,
@@ -446,6 +506,7 @@ int main(int argc, char **argv)
     t6b_serial_fallback(&pindex);
     t6c_user_pnach(&uindex);
     t6d_dup_pick(&pindex, path);
+    t6e_patch0_enable();
     ws_patch_index_free(&pindex);
     ws_user_index_free(&uindex);
     t7_real_patches(argv[3]);

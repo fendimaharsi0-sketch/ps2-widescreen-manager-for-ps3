@@ -182,9 +182,10 @@ static int serial_from_bare(const char *s, char *out, size_t out_size)
 }
 
 /* Parser satu baris patch (cerminan PATCH_RE / parsePatchLine).
- * Kembalikan 1 kalau ini baris patch (terisi enabled/addr/type/value/
- * comment), 0 kalau bukan baris patch. */
-static int parse_patch_line(const char *line, int *enabled,
+ * Kembalikan 1 kalau ini baris patch (terisi addr/type/value/
+ * comment), 0 kalau bukan baris patch. Fase 3o: status patch=0/1
+ * diabaikan — keduanya baris patch yang aktif. */
+static int parse_patch_line(const char *line,
                             char *addr_tok, size_t addr_size,
                             char *ptype, size_t ptype_size,
                             char *value_tok, size_t value_size,
@@ -202,7 +203,6 @@ static int parse_patch_line(const char *line, int *enabled,
     EXPECT_CH('=');
     SKIP_WS();
     if (pos >= n || (line[pos] != '0' && line[pos] != '1')) return 0;
-    *enabled = (line[pos] == '1');
     pos++;
     SKIP_WS();
     EXPECT_CH(',');
@@ -303,14 +303,12 @@ int ws_parse_pnach(const char *text, size_t len, ws_pnach_t *out,
             continue;
         }
         {
-            int enabled = 0;
             char addr_tok[32], ptype[16], value_tok[32];
             const char *comment = NULL;
-            if (!parse_patch_line(line, &enabled, addr_tok, sizeof(addr_tok),
+            if (!parse_patch_line(line, addr_tok, sizeof(addr_tok),
                                   ptype, sizeof(ptype), value_tok,
                                   sizeof(value_tok), &comment))
                 continue;
-            if (!enabled) continue;  /* patch=0: nonaktif di PCSX2 */
             {
                 uint64_t raw_addr = 0, value64 = 0;
                 size_t k;

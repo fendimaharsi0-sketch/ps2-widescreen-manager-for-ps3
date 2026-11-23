@@ -58,7 +58,8 @@ int ws_iso_patch_preview(const char *dir, const char *iso_name,
                          ws_report_t *report, int *n_write, int *n_skip);
 
 /* Terapkan teks pnach ke ISO (buka rb+, tulis langsung).
- * Hanya baris patch=1 yang aktif; per baris: size dari
+ * Semua baris patch aktif (Fase 3o: status patch=0 diabaikan);
+ * per baris: size dari
  * ws_patch_effective_size; skip kondisional 0xE, tipe tidak dikenal,
  * alamat >= 0x2000000, dan alamat BSS / di luar byte file ELF.
  * Tulis tepat `size` byte (low byte nilai, little-endian) — tidak
